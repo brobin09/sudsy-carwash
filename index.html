@@ -58,6 +58,8 @@
     animation:pulse 1.2s infinite;
   }
   .phaseIcon.done { opacity:1; background:#b7efc5; border-color:#38b000; }
+  .phaseIcon.done.partial { background:#fff1b8; border-color:#ffb703; }
+  .phaseIcon.done.weak { background:#ffd6cf; border-color:#e85d4a; }
   @keyframes pulse { 0%,100%{transform:scale(1.22)} 50%{transform:scale(1.32)} }
 
   #stars {
@@ -65,6 +67,40 @@
     background:linear-gradient(#ffffff,#e8f4fd); border-radius:22px; padding:8px 18px;
     font-size:24px; font-weight:bold; color:#1d3557; pointer-events:none;
     border:4px solid #4361ee; box-shadow:0 6px 14px rgba(0,0,0,.2);
+  }
+  #cleanBadge {
+    position:absolute; top:calc(70px + env(safe-area-inset-top)); right:14px; z-index:31;
+    min-width:132px; min-height:58px; padding:7px 13px; border-radius:20px;
+    display:none; align-items:center; justify-content:center; gap:9px;
+    background:linear-gradient(180deg,#ffffff,#dff5ff);
+    border:4px solid #22a6d5; box-shadow:0 7px 16px rgba(0,0,0,.2);
+    color:#12324a; pointer-events:none; transform-origin:center;
+  }
+  #cleanBadge { flex-direction:column; align-items:stretch; gap:0; }
+  #cleanBadge .badgeTop { display:flex; align-items:center; justify-content:center; gap:9px; }
+  #cleanBadge .subScores { display:flex; flex-direction:column; gap:3px; margin-top:6px; }
+  #cleanBadge .subRow { display:flex; align-items:center; gap:6px; font-size:9px; font-weight:900; color:#12324a; letter-spacing:.3px; }
+  #cleanBadge .subRow span { width:62px; text-align:left; white-space:nowrap; }
+  #cleanBadge .subRow i { flex:1; height:7px; border-radius:4px; background:rgba(18,50,74,.14); overflow:hidden; display:block; font-style:normal; }
+  #cleanBadge .subRow b { display:block; height:100%; width:0%; border-radius:4px; background:linear-gradient(90deg,#4cc9f0,#06d6a0); transition:width .25s; }
+  #cleanBadge .drop { font-size:27px; line-height:1; }
+  #cleanBadge .cleanCopy { display:flex; flex-direction:column; align-items:flex-start; line-height:1; }
+  #cleanBadge small { font-size:11px; letter-spacing:1.4px; font-weight:900; opacity:.72; }
+  #cleanBadge strong { font-size:25px; margin-top:4px; }
+  #cleanBadge.rushing {
+    border-color:#ff9f1c; background:linear-gradient(180deg,#fff7dc,#ffe2a8);
+    animation:rushPulse .55s ease-in-out infinite alternate;
+  }
+  #cleanBadge.rushing small { color:#a33a00; opacity:1; }
+  @keyframes rushPulse { from{transform:scale(1)} to{transform:scale(1.06)} }
+  @media (max-width:760px){
+    #cleanBadge { top:calc(58px + env(safe-area-inset-top)); min-width:108px; min-height:50px; padding:5px 9px; }
+    #cleanBadge .drop { font-size:22px; }
+    #cleanBadge strong { font-size:21px; }
+    #cleanBadge small { font-size:9px; }
+  }
+  @media (max-width:520px){
+    #cleanBadge { top:calc(102px + env(safe-area-inset-top)); right:10px; }
   }
   #progTxt {
     position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
@@ -202,7 +238,28 @@
   }
   #bigBtn:active { transform:translateY(8px); box-shadow:0 2px 0 #049f77; }
   #celebrate h1 { animation:bounceIn .6s; }
+  #finalClean {
+    display:none; padding:10px 24px; border-radius:999px; background:#fff;
+    border:5px solid #22a6d5; color:#12324a; font-size:clamp(24px,4.3vw,42px);
+    font-weight:900; letter-spacing:1px; box-shadow:0 8px 18px rgba(0,0,0,.2);
+  }
   @keyframes bounceIn { 0%{transform:scale(.3)} 60%{transform:scale(1.15)} 100%{transform:scale(1)} }
+  #report {
+    display:none; background:#fff; border:5px solid #ffd166; border-radius:24px;
+    padding:12px 20px; width:min(560px,92vw); box-shadow:0 8px 18px rgba(0,0,0,.2);
+    max-height:44vh; overflow-y:auto;
+  }
+  #report .rTitle { text-align:center; font-size:14px; font-weight:900; letter-spacing:1.5px; color:#888; margin-bottom:6px; }
+  #report .rRow { display:flex; align-items:center; gap:10px; margin:5px 0; font-weight:900; color:#334; font-size:15px; }
+  #report .rRow .lab { width:104px; text-align:left; white-space:nowrap; }
+  #report .rRow .num { width:48px; text-align:right; }
+  #report .rRow i { flex:1; height:13px; border-radius:7px; background:#e9ecef; overflow:hidden; display:block; font-style:normal; }
+  #report .rRow b { display:block; height:100%; border-radius:7px; background:linear-gradient(90deg,#4cc9f0,#06d6a0); }
+  #report .rRow b.mid { background:linear-gradient(90deg,#ffd166,#ffb703); }
+  #report .rRow b.low { background:linear-gradient(90deg,#ff9f8f,#e85d4a); }
+  #report .stRow { display:flex; justify-content:center; flex-wrap:wrap; gap:10px; margin-top:9px; padding-top:8px; border-top:2px dashed #e9ecef; }
+  #report .stIc { display:flex; flex-direction:column; align-items:center; font-size:21px; line-height:1.15; }
+  #report .stIc em { font-style:normal; font-size:10px; font-weight:900; color:#666; }
   #bigStar { font-size:100px; animation:spinStar 1.4s ease-out; }
   @keyframes spinStar { 0%{transform:scale(0) rotate(-360deg)} 70%{transform:scale(1.3)} 100%{transform:scale(1) rotate(0)} }
 </style>
@@ -212,6 +269,18 @@
 
 <div id="phaseStrip"></div>
 <div id="stars">⭐ <span id="starN">0</span></div>
+<div id="cleanBadge" aria-live="polite">
+  <div class="badgeTop">
+    <span class="drop">💦</span>
+    <span class="cleanCopy"><small id="cleanLabel">CLEAN</small><strong id="cleanPct">0%</strong></span>
+  </div>
+  <div class="subScores">
+    <div class="subRow"><span>🚗 BODY</span><i><b id="sBody"></b></i></div>
+    <div class="subRow"><span>🛞 WHEELS</span><i><b id="sWheels"></b></i></div>
+    <div class="subRow"><span>🚿 RINSED</span><i><b id="sRinsed"></b></i></div>
+    <div class="subRow"><span>✨ FINISH</span><i><b id="sFinish"></b></i></div>
+  </div>
+</div>
 <button id="homeBtn">🏠</button>
 <div id="progWrap"><div id="progFill"></div><div id="progTxt">0%</div></div>
 <div id="bubbleMsg">
@@ -255,13 +324,15 @@
 <div class="overlay hidden" id="celebrate">
   <div id="bigStar">⭐</div>
   <h1 id="cheerTxt">Sparkling clean!</h1>
+  <div id="finalClean">100% CLEAN</div>
+  <div id="report"></div>
   <button id="bigBtn">Wash another! 🚗</button>
 </div>
 
 <script>
 "use strict";
 /* ============================================================
-   SUDSY'S CAR WASH v3
+   SUDSY'S CAR WASH v4
    Modes:  MANUAL — drive in, scrub/rinse/dry/shine by hand, drive out
            AUTO   — drive through a scrolling wash tunnel with
                     soak, foam, mitter curtain, brushes, rinse, dryer
@@ -282,6 +353,126 @@ let manualPhase=-1;    // 0 spray 1 scrub 2 rinse 3 dry 4 shine 5 drive-out
 let particles=[];
 let lastTouchTime=Date.now();
 let autoHomeTimer=null;
+let frameScale=1, lastFrameClock=performance.now();
+let finalCleanPct=100;
+const AUTO_RATES={soak:.010,foam:.0095,wheels:.011,mitter:.009,brush:.009,rinse:.010,wax:.009,dry:.010};
+
+/* ============================================================
+   SECTION MODEL — every vehicle is seven real surfaces.
+   Each carries its own dirt / softness / soap / water / wax state,
+   stations only reach the sections their hardware touches,
+   and effectiveness depends on what earlier stations prepared.
+   ============================================================ */
+const SECTIONS=["roof","windows","hood","doors","rear","fwheel","rwheel"];
+const BODY_SECS=["roof","windows","hood","doors","rear"];
+const WHEEL_SECS=["fwheel","rwheel"];
+/* Disjoint tiles in car-local space [x,y,w,h] as fractions of LW x LH.
+   The car faces right, so "hood" is the right column and "rear" the left. */
+const SEC_TILES={
+  roof:   [0.22,0.00,0.56,0.24],
+  windows:[0.22,0.24,0.56,0.24],
+  hood:   [0.78,0.00,0.22,0.72],
+  rear:   [0.00,0.00,0.22,0.72],
+  doors:  [0.22,0.48,0.56,0.24],
+  fwheel: [0.50,0.72,0.50,0.28],
+  rwheel: [0.00,0.72,0.50,0.28],
+};
+/* Which sections each auto station can physically reach. */
+const STATION_REACH={
+  soak:  SECTIONS,
+  foam:  SECTIONS,
+  wheels:WHEEL_SECS,
+  mitter:["roof","windows","hood"],
+  brush: ["hood","doors","rear","windows"],
+  rinse: SECTIONS,
+  wax:   BODY_SECS,
+  dry:   SECTIONS,
+};
+let sec={};
+function resetSections(){
+  sec={};
+  for(const k of SECTIONS)
+    sec[k]={dirt:1,soft:0,soap:0,peakSoap:0,water:0,wax:0,waxQ:0};
+}
+resetSections();
+function sectionAt(nx,ny){
+  for(const k of SECTIONS){
+    const t=SEC_TILES[k];
+    if(nx>=t[0]&&nx<t[0]+t[2]&&ny>=t[1]&&ny<t[1]+t[3]) return k;
+  }
+  return "doors";
+}
+function avgSec(keys,f){
+  let s=0; for(const k of keys) s+=f(sec[k]);
+  return s/keys.length;
+}
+/* Scrubbing power depends on prep: soaked dirt is soft, and foam
+   (remembered via peakSoap even after rinsing) lubricates the brushes.
+   Skipping both still cleans a little — just slowly. */
+function removability(s){
+  return (0.22+0.78*s.soft)*(0.22+0.78*s.peakSoap);
+}
+function addWax(s,add,qualityCap){
+  const prev=s.wax, nw=clamp01(prev+add), real=nw-prev;
+  if(real<=0.00001) return;
+  // wax bonds cleanly only to a rinsed, clean surface; over dirt it streaks
+  const q=clamp01(1-s.dirt*1.5)*(s.soap<0.15?1:0.55)*(qualityCap??1);
+  s.waxQ=(s.waxQ*prev+q*real)/nw;
+  s.wax=nw;
+}
+/* Per-frame effect of an active auto station on the sections it reaches. */
+function applyStationTick(st,rate){
+  const r=rate;
+  if(st.key==="soak"){
+    for(const k of SECTIONS){ const s=sec[k];
+      const wm=WHEEL_SECS.includes(k)?0.3:1;   // baked-on wheel grime resists
+      s.soft=clamp01(s.soft+r*1.5); s.water=clamp01(s.water+r*1.3);
+      s.dirt=clamp01(s.dirt-r*0.15*wm); }
+  } else if(st.key==="foam"){
+    for(const k of SECTIONS){ const s=sec[k];
+      const m=WHEEL_SECS.includes(k)?0.55:1;
+      s.soap=clamp01(s.soap+r*1.6*m);
+      s.peakSoap=Math.max(s.peakSoap,s.soap); }
+  } else if(st.key==="wheels"){
+    for(const k of WHEEL_SECS){ const s=sec[k];
+      s.dirt=clamp01(s.dirt-r*2.5);          // high pressure needs no prep
+      s.water=clamp01(s.water+r*1.5); }
+  } else if(st.key==="mitter"){
+    for(const k of STATION_REACH.mitter){ const s=sec[k];
+      s.dirt=clamp01(s.dirt-r*1.8*removability(s));
+      s.soap=clamp01(s.soap-r*0.25); }
+  } else if(st.key==="brush"){
+    for(const k of STATION_REACH.brush){ const s=sec[k];
+      s.dirt=clamp01(s.dirt-r*2.0*removability(s));
+      s.soap=clamp01(s.soap-r*0.25); }
+  } else if(st.key==="rinse"){
+    for(const k of SECTIONS){ const s=sec[k];
+      const wm=WHEEL_SECS.includes(k)?0.3:1;
+      s.soap=clamp01(s.soap-r*2.3);
+      s.dirt=clamp01(s.dirt-r*0.4*s.soft*wm); // rinse carries off loosened grime
+      s.water=clamp01(s.water+r*1.7); }
+  } else if(st.key==="wax"){
+    for(const k of BODY_SECS){ const s=sec[k];
+      if(s.soap<0.4) addWax(s,r*1.7); }      // wax won't take over a soap film
+  } else if(st.key==="dry"){
+    for(const k of SECTIONS){ const s=sec[k];
+      s.water=clamp01(s.water-r*2.1); }
+  }
+}
+/* Weighted score: body 55, wheels 15, rinsed 15, finish 15. */
+function scoreParts(){
+  const body=clamp01(1-avgSec(BODY_SECS,s=>s.dirt));
+  const wheels=clamp01(1-avgSec(WHEEL_SECS,s=>s.dirt));
+  const rinsed=clamp01(1-avgSec(SECTIONS,s=>s.soap));
+  const finish=clamp01(
+    0.7*avgSec(BODY_SECS,s=>s.wax*Math.max(0.3,s.waxQ)) +
+    0.3*(1-avgSec(SECTIONS,s=>s.water)));
+  return {body,wheels,rinsed,finish};
+}
+function totalScore(){
+  const p=scoreParts();
+  return clamp01(p.body*0.55+p.wheels*0.15+p.rinsed*0.15+p.finish*0.15);
+}
 
 /* ---------- car-local offscreen layers (1000 x 520) ---------- */
 const LW=1000, LH=520;
@@ -931,7 +1122,7 @@ function buildAutoWorld(keepPos){
     {key:"wax",   icon:"🌈", lbl:"WAX"},
     {key:"dry",   icon:"💨", lbl:"DRY"},
   ];
-  stations=defs.map((d,i)=>({...d, x:start+gap*(i+1), passed:false}));
+  stations=defs.map((d,i)=>({...d, x:start+gap*(i+1), passed:false, progress:0, rated:false}));
   exitX=start+gap*(defs.length+1.6);
   worldLen=exitX+W*0.7;
   if(!keepPos){ car.x=car.w*0.15; camX=0; }
@@ -1380,18 +1571,36 @@ function drawCarFull(){
   g.restore();
   drawVehicle(g,sx,y,car.w,CARS[S.carType],car.spin,shineGlow);
   // overlays clipped to car footprint area
-  if(dirtLevel>0.01){
-    g.globalAlpha=dirtLevel;
-    g.drawImage(dirtCv,sx,y,car.w,car.h); g.globalAlpha=1;
+  if(S.mode==="auto"){
+    // each section shows its own dirt, suds, and water
+    drawOverlayTiled(dirtCv,sx,y,s=>s.dirt);
+    drawOverlayTiled(soapCv,sx,y,s=>s.soap);
+    drawOverlayTiled(dropCv,sx,y,s=>s.water);
+  } else {
+    if(dirtLevel>0.01){
+      g.globalAlpha=dirtLevel;
+      g.drawImage(dirtCv,sx,y,car.w,car.h); g.globalAlpha=1;
+    }
+    if(soapLevel>0.01){
+      g.globalAlpha=soapLevel;
+      g.drawImage(soapCv,sx,y,car.w,car.h); g.globalAlpha=1;
+    }
+    if(dropLevel>0.01){
+      g.globalAlpha=dropLevel;
+      g.drawImage(dropCv,sx,y,car.w,car.h); g.globalAlpha=1;
+    }
   }
-  if(soapLevel>0.01){
-    g.globalAlpha=soapLevel;
-    g.drawImage(soapCv,sx,y,car.w,car.h); g.globalAlpha=1;
+}
+function drawOverlayTiled(cvs,sx,y,alphaOf){
+  for(const k of SECTIONS){
+    const t=SEC_TILES[k], a=alphaOf(sec[k]);
+    if(a<0.02) continue;
+    g.globalAlpha=Math.min(1,a);
+    g.drawImage(cvs,
+      t[0]*LW, t[1]*LH, t[2]*LW, t[3]*LH,
+      sx+t[0]*car.w, y+t[1]*car.h, t[2]*car.w, t[3]*car.h);
   }
-  if(dropLevel>0.01){
-    g.globalAlpha=dropLevel;
-    g.drawImage(dropCv,sx,y,car.w,car.h); g.globalAlpha=1;
-  }
+  g.globalAlpha=1;
 }
 
 /* ============================================================
@@ -1432,6 +1641,54 @@ function showPedal(on){
 }
 function showHorn(on){ $("#horn").style.display=on?"flex":"none"; }
 function showHome(on){ $("#homeBtn").style.display=on?"flex":"none"; }
+function clamp01(v){ return Math.max(0,Math.min(1,v)); }
+function resetAutoMetrics(){
+  resetSections();
+  finalCleanPct=0;
+  updateCleanBadge(false);
+}
+function autoCleanFraction(){ return totalScore(); }
+function updateCleanBadge(rushing=false){
+  const p=scoreParts();
+  const pct=Math.round(totalScore()*100);
+  $("#cleanPct").textContent=pct+"%";
+  $("#cleanLabel").textContent=rushing?"TOO FAST":"CLEAN";
+  $("#cleanBadge").classList.toggle("rushing",rushing);
+  $("#sBody").style.width=Math.round(p.body*100)+"%";
+  $("#sWheels").style.width=Math.round(p.wheels*100)+"%";
+  $("#sRinsed").style.width=Math.round(p.rinsed*100)+"%";
+  $("#sFinish").style.width=Math.round(p.finish*100)+"%";
+}
+function showCleanBadge(on){
+  $("#cleanBadge").style.display=on?"flex":"none";
+  if(!on) $("#cleanBadge").classList.remove("rushing");
+}
+function setAutoStationProgress(st){
+  const pct=Math.round(clamp01(st.progress)*100);
+  $("#progFill").style.width=pct+"%";
+  $("#progTxt").textContent=st.lbl+" "+pct+"%";
+}
+function rateAutoStripStation(index,progress){
+  const item=$("#phaseStrip").children[index+1];
+  if(!item) return;
+  const icon=item.querySelector(".phaseIcon");
+  if(!icon) return;
+  icon.classList.remove("partial","weak");
+  if(progress<.55) icon.classList.add("weak");
+  else if(progress<.88) icon.classList.add("partial");
+  icon.title=Math.round(progress*100)+"% complete";
+}
+function currentMaxSpeed(){
+  let maxSp=car.w*0.0075;
+  const kind=CARS[S.carType].kind;
+  if(kind==="race") maxSp*=1.2;
+  if(kind==="monster") maxSp*=0.85;
+  return maxSp;
+}
+function syncAutoVisuals(){
+  // dirt/soap/water are drawn per-section now; only the body glow is global
+  shineGlow=clamp01(avgSec(BODY_SECS,s=>s.wax*Math.max(0.4,s.waxQ))*0.85);
+}
 
 /* ============================================================
    FLOW
@@ -1458,7 +1715,10 @@ function goHome(){
   particles=[];
   showPedal(false); showHorn(false); showHome(false);
   hideMsg(); $("#progWrap").classList.remove("show");
+  showCleanBadge(false);
   $("#phaseStrip").innerHTML="";
+  $("#finalClean").style.display="none";
+  $("#report").style.display="none";
   $("#celebrate").classList.add("hidden");
   $("#picker").classList.add("hidden");
   $("#menu").classList.remove("hidden");
@@ -1492,10 +1752,14 @@ function startRun(i){
   genDirt(); sc.clearRect(0,0,LW,LH); pc.clearRect(0,0,LW,LH);
   cover.fill(0);
   particles=[];
+  resetAutoMetrics();
+  $("#finalClean").style.display="none";
+  $("#report").style.display="none";
   $("#picker").classList.add("hidden");
   showHome(true); showHorn(true); showPedal(true);
   if(S.mode==="manual"){
     S.scene="mdrive";
+    showCleanBadge(true);
     buildManualWorld(false);
     manualPhase=-1;
     setStrip(MANUAL_ICONS,MANUAL_LABELS,0);
@@ -1505,9 +1769,13 @@ function startRun(i){
     buildAutoWorld(false);
     fillFoam(); fillDroplets();
     soapLevel=0; dropLevel=0;
+    showCleanBadge(true);
+    $("#progWrap").classList.add("show");
+    $("#progFill").style.width="0%";
+    $("#progTxt").textContent="ENTER WASH";
     setStrip(["🚗",...stations.map(s=>s.icon),"🏁"],
              ["DRIVE",...stations.map(s=>s.lbl),"DONE"],0);
-    msg("🚗","Hold GAS to drive through!");
+    msg("🚗","Drive slowly for a cleaner car!");
   }
   blip(659,0.15,"triangle",0.15);
   lastTouchTime=Date.now();
@@ -1532,9 +1800,19 @@ function advanceManual(){
   cheer();
   spawnSparkles(car.x-camX+car.w/2,car.y+car.h/2,false,12);
   if(manualPhase===0) setManualPhase(1);
-  else if(manualPhase===1){ dc.clearRect(0,0,LW,LH); setManualPhase(2); }
-  else if(manualPhase===2){ sc.clearRect(0,0,LW,LH); soapLevel=0; fillDroplets(); dropLevel=1; setManualPhase(3); }
-  else if(manualPhase===3){ dropLevel=0; setManualPhase(4); }
+  else if(manualPhase===1){
+    // suds finish the loosened grime as the layer visually clears
+    for(const k of SECTIONS){ const s=sec[k]; s.dirt*=0.5; }
+    dc.clearRect(0,0,LW,LH); setManualPhase(2);
+  }
+  else if(manualPhase===2){
+    for(const k of SECTIONS){ const s=sec[k]; s.soap*=0.3; s.dirt*=0.8; }
+    sc.clearRect(0,0,LW,LH); soapLevel=0; fillDroplets(); dropLevel=1; setManualPhase(3);
+  }
+  else if(manualPhase===3){
+    for(const k of SECTIONS){ const s=sec[k]; s.water*=0.3; }
+    dropLevel=0; setManualPhase(4);
+  }
   else if(manualPhase===4){
     // wax absorbed in a golden burst
     sc.clearRect(0,0,LW,LH); soapLevel=0;
@@ -1548,25 +1826,47 @@ function advanceManual(){
     msg("🏁","Hold GAS to drive out!");
   }
 }
+function buildReport(){
+  const p=scoreParts();
+  const rows=[["🚗 BODY",p.body],["🛞 WHEELS",p.wheels],["🚿 RINSED",p.rinsed],["✨ FINISH",p.finish]];
+  let html='<div class="rTitle">INSPECTION REPORT</div>';
+  html+=rows.map(([lab,v])=>{
+    const pct=Math.round(v*100);
+    const cls=pct>=88?"":(pct>=55?"mid":"low");
+    return `<div class="rRow"><span class="lab">${lab}</span><i><b class="${cls}" style="width:${pct}%"></b></i><span class="num">${pct}%</span></div>`;
+  }).join("");
+  if(S.mode==="auto"){
+    html+='<div class="stRow">'+stations.map(st=>{
+      const pct=Math.round(clamp01(st.progress)*100);
+      const dot=pct>=88?"🟢":(pct>=55?"🟡":"🔴");
+      return `<div class="stIc">${st.icon}<em>${dot} ${pct}%</em></div>`;
+    }).join("")+"</div>";
+  }
+  const rep=$("#report");
+  rep.innerHTML=html;
+  rep.style.display="block";
+}
 function finishRun(){
   if(S.celebrating) return;
   S.celebrating=true;
   setMachine(null); setEngine(false,0);
-  S.stars++; $("#starN").textContent=S.stars;
+  finalCleanPct=Math.round(totalScore()*100);
+  const earnedStars=finalCleanPct>=95?3:(finalCleanPct>=80?2:1);
+  S.stars+=earnedStars; $("#starN").textContent=S.stars;
   hideMsg(); $("#progWrap").classList.remove("show");
   showPedal(false); showHorn(false);
   spawnConfetti(); tada(); setTimeout(honk,700);
-  $("#cheerTxt").textContent=CHEERS[Math.floor(Math.random()*CHEERS.length)];
-  $("#bigBtn").textContent=S.mode==="auto"?"Home now 🏠":"Wash another! 🚗";
+  let cheerText="Still dirty — wash more next time!";
+  if(finalCleanPct>=95) cheerText="Sparkling clean!";
+  else if(finalCleanPct>=80) cheerText="Great wash!";
+  else if(finalCleanPct>=60) cheerText=S.mode==="auto"?"Partly clean — slow down next time!":"Partly clean — scrub everywhere!";
+  $("#cheerTxt").textContent=cheerText;
+  $("#finalClean").textContent=finalCleanPct+"% CLEAN · "+"⭐".repeat(earnedStars);
+  $("#finalClean").style.display="block";
+  $("#bigStar").textContent="⭐".repeat(earnedStars);
+  buildReport();
+  $("#bigBtn").textContent="Done ✓";
   setTimeout(()=>$("#celebrate").classList.remove("hidden"),700);
-  if(S.mode==="auto"){
-    autoHomeTimer=setTimeout(()=>{
-      if(S.celebrating&&S.scene==="auto"){
-        S.round++;
-        goHome();
-      }
-    },4200);
-  }
 }
 
 /* ============================================================
@@ -1642,10 +1942,15 @@ function touchAt(x,y,isStart){
   const pad=car.w*0.09, R=car.w*0.075;
   const onCar = x>sx-pad&&x<sx+car.w+pad&&y>car.y-pad&&y<car.y+car.h+pad;
   const lx=(x-sx)/car.w*LW, ly=(y-car.y)/car.h*LH, LR=R/car.w*LW;
+  // the section under the finger tracks real state, same model as auto mode
+  const ms=onCar?sec[sectionAt(clamp01(lx/LW),clamp01(ly/LH))]:null;
 
   if(manualPhase===0){
     spawnSpray(x,y,false);
     if(onCar){
+      ms.water=clamp01(ms.water+0.035);
+      ms.soft=clamp01(ms.soft+0.04);
+      ms.dirt=clamp01(ms.dirt-0.004);
       markGridLocal(lx,ly,LR*1.5,cover);
       eraseLocal(dc,lx,ly,LR*0.4);
       const f=coverFrac(); setProgress(f/0.72);
@@ -1653,6 +1958,9 @@ function touchAt(x,y,isStart){
     }
   } else if(manualPhase===1){
     if(onCar){
+      ms.soap=clamp01(ms.soap+0.05);
+      ms.peakSoap=Math.max(ms.peakSoap,ms.soap);
+      ms.dirt=clamp01(ms.dirt-0.035*removability(ms));
       eraseLocal(dc,lx,ly,LR);
       paintSoapLocal(lx,ly,LR*0.9); soapLevel=1; soapDirty=true;
       spawnBubbles(x,y,false,2);
@@ -1664,6 +1972,9 @@ function touchAt(x,y,isStart){
   } else if(manualPhase===2){
     spawnSpray(x,y,false);
     if(onCar){
+      ms.soap=clamp01(ms.soap-0.07);
+      ms.dirt=clamp01(ms.dirt-0.006*ms.soft);
+      ms.water=clamp01(ms.water+0.04);
       eraseLocal(sc,lx,ly,LR*1.4);
       markGridLocal(lx,ly,LR*1.4,cover);
       const f=coverFrac(); setProgress(f/0.78);
@@ -1671,6 +1982,7 @@ function touchAt(x,y,isStart){
     }
   } else if(manualPhase===3){
     if(onCar){
+      ms.water=clamp01(ms.water-0.07);
       eraseLocal(pc,lx,ly,LR*1.4);
       markGridLocal(lx,ly,LR*1.3,cover);
       if(Date.now()-squeakGate>260){ squeak(); squeakGate=Date.now(); }
@@ -1679,6 +1991,7 @@ function touchAt(x,y,isStart){
     }
   } else if(manualPhase===4){
     if(onCar){
+      if(ms.soap<0.5) addWax(ms,0.05);
       paintWaxLocal(lx,ly,LR*0.9); soapLevel=1; soapDirty=true;
       markGridLocal(lx,ly,LR,cover);
       if(Date.now()-scrubGate>170){ blip(880+Math.random()*300,0.08,"sine",0.09); scrubGate=Date.now(); }
@@ -1695,6 +2008,7 @@ function touchAt(x,y,isStart){
       if(shineTaps>=5) advanceManual();
     }
   }
+  if(onCar&&manualPhase>=0&&manualPhase<6) updateCleanBadge(false);
 }
 
 /* ---------- machine sound for manual phases ---------- */
@@ -1731,9 +2045,7 @@ function update(){
   S.t++;
   if(soapDirty){ applyMask(sc); soapDirty=false; }
   const kind=CARS[S.carType].kind;
-  let maxSp=car.w*0.0075;
-  if(kind==="race") maxSp*=1.2;
-  if(kind==="monster") maxSp*=0.85;
+  const maxSp=currentMaxSpeed();
   if(S.scene==="mdrive"||(S.scene==="mwash"&&manualPhase===6)||S.scene==="auto"){
     let target=S.pedal?maxSp:0;
     // conveyor: inside the tunnel the track gently pulls the car
@@ -1748,7 +2060,7 @@ function update(){
     }
     if(S.brake) target=0;
     S.speed+=(target-S.speed)*(S.brake?0.16:0.06);
-    if(S.speed>maxSp*0.3) hideMsg();
+    if(S.speed>maxSp*0.3&&S.scene!=="auto") hideMsg();
     if(S.speed<0.02&&!S.pedal) S.speed=0;
     car.x+=S.speed;
     car.spin+=S.speed/ (car.w*0.085);
@@ -1782,41 +2094,53 @@ function update(){
 
 function autoStations(){
   const cx=car.x+car.w/2, cy=car.y+car.h*0.45;
+  const maxSp=Math.max(.001,currentMaxSpeed());
+  const speedRatio=clamp01(S.speed/maxSp);
   let soundWanted=null;
   let activeIdx=0;
+  let activeStation=null;
+  let rushing=false;
+
   stations.forEach((st,i)=>{
     const near=stationActive(st);
-    if(cx>st.x+car.w*0.62&&!st.passed){ st.passed=true; cheer(); }
+    if(cx>st.x+car.w*0.62&&!st.passed){
+      st.passed=true;
+      st.rated=true;
+      rateAutoStripStation(i,st.progress);
+      if(st.progress>=.88) cheer();
+      else if(st.progress<.55) blip(210,.18,"sawtooth",.08);
+    }
     if(st.passed) activeIdx=Math.max(activeIdx,i+2);
     else if(near) activeIdx=Math.max(activeIdx,i+1);
     if(!near) return;
+
+    activeStation=st;
+    const speedEffect=Math.max(.30,1.08-speedRatio*.76);
+    const tick=(AUTO_RATES[st.key]||.009)*speedEffect*frameScale;
+    st.progress=clamp01(st.progress+tick);
+    applyStationTick(st,tick);
+    rushing=speedRatio>.78&&st.progress<.88;
     const sxScreen=st.x-camX;
+
     if(st.key==="soak"){
       soundWanted="spray";
-      dirtLevel=Math.max(0.6,dirtLevel-0.006);
       if(S.t%2===0) for(let i2=0;i2<5;i2++) spawnJet(st.x-car.w*0.28+i2*car.w*0.14,H*0.26,true);
     } else if(st.key==="foam"){
       soundWanted="foam";
-      soapLevel=Math.min(1,soapLevel+0.02);
-      dirtLevel=Math.max(0.35,dirtLevel-0.008);
       if(S.t%3===0){
         spawnFoamBlast(st.x-car.w*0.31,H*0.24,cx,cy,true,"rgba(255,182,213,.9)");
         spawnFoamBlast(st.x+car.w*0.31,H*0.24,cx,cy,true,"rgba(178,222,255,.9)");
       }
     } else if(st.key==="mitter"){
       soundWanted="brush";
-      dirtLevel=Math.max(0.12,dirtLevel-0.01);
       car.bounce=3.2;
       if(S.t%6===0) spawnBubbles(sxScreen+(Math.random()-0.5)*car.w*0.5,car.y+Math.random()*car.h*0.6,false,1);
     } else if(st.key==="brush"){
       soundWanted="brush";
-      dirtLevel=Math.max(0,dirtLevel-0.012);
-      soapLevel=Math.max(0.45,soapLevel-0.006);
       car.bounce=3.6;
       if(S.t%5===0) spawnBubbles(sxScreen+(Math.random()-0.5)*car.w*0.6,car.y+Math.random()*car.h,false,1);
     } else if(st.key==="wheels"){
       soundWanted="spray";
-      dirtLevel=Math.max(0.28,dirtLevel-0.01);
       if(S.t%2===0){
         for(let k=-1;k<=1;k+=2){
           P({k:"water",x:st.x+k*car.w*0.2+(Math.random()-0.5)*14,y:roadTop()-8,world:true,
@@ -1829,7 +2153,6 @@ function autoStations(){
       }
     } else if(st.key==="wax"){
       soundWanted="foam";
-      shineGlow=Math.min(1,shineGlow+0.011);
       if(S.t%3===0){
         const wc=["rgba(239,71,111,.85)","rgba(255,209,102,.85)","rgba(6,214,160,.85)",
                   "rgba(76,201,240,.85)","rgba(155,93,229,.85)"];
@@ -1840,35 +2163,41 @@ function autoStations(){
       if(S.t%6===0) spawnSparkles(car.x-camX+Math.random()*car.w,car.y+Math.random()*car.h*0.7,false,1);
     } else if(st.key==="rinse"){
       soundWanted="spray";
-      soapLevel=Math.max(0,soapLevel-0.015);
-      dropLevel=Math.min(1,dropLevel+0.02);
-      dirtLevel=Math.max(0,dirtLevel-0.01);
       if(S.t%2===0) for(let i2=0;i2<5;i2++) spawnJet(st.x-car.w*0.28+i2*car.w*0.14,H*0.26,true);
     } else if(st.key==="dry"){
       soundWanted="dryer";
-      dropLevel=Math.max(0,dropLevel-0.015);
-      shineGlow=Math.min(1,shineGlow+0.012);
       if(S.t%3===0) spawnWind(sxScreen-car.w*0.3+Math.random()*car.w*0.6,car.y+Math.random()*car.h*0.8,false);
       if(S.t%9===0) spawnSparkles(sxScreen+(Math.random()-0.5)*car.w*0.4,car.y+Math.random()*car.h*0.6,false,1);
     }
   });
+
+  syncAutoVisuals();
+  updateCleanBadge(rushing);
+  if(activeStation){
+    setAutoStationProgress(activeStation);
+    if(rushing&&S.t%90===0) msg("🐢","Slow down so this station can finish!");
+  } else if(!S.autoExit){
+    $("#progFill").style.width=Math.round(autoCleanFraction()*100)+"%";
+    $("#progTxt").textContent="CLEAN "+Math.round(autoCleanFraction()*100)+"%";
+  }
+
   const allPassed=stations.length>0&&stations.every(st=>st.passed);
   if(allPassed&&!S.autoExit&&!S.celebrating){
     S.autoExit=true;
     S.pedal=false; S.brake=false;
     activeIdx=stations.length+1;
-    msg("✅","Wash complete — rolling out!");
+    finalCleanPct=Math.round(autoCleanFraction()*100);
+    $("#progFill").style.width=finalCleanPct+"%";
+    $("#progTxt").textContent="FINAL "+finalCleanPct+"%";
+    msg("✅",finalCleanPct+"% clean — rolling out!");
     dingDing();
   }
   if(car.x>exitX) activeIdx=stations.length+1;
   stripProgress(activeIdx);
+  stations.forEach((st,i)=>{ if(st.rated) rateAutoStripStation(i,st.progress); });
   setMachine(soundWanted);
-  if(!soundWanted&&car.x>exitX-car.w&&!S.celebrating){
-    // encourage the final stretch
-  }
-  // update guidance text
-  if(!S.autoExit&&car.x>exitX-car.w*0.3&&!S.celebrating&&S.speed<car.w*0.002) msg("🏁","You did it! Keep going!");
 }
+
 
 /* ============================================================
    RENDER
@@ -1888,7 +2217,9 @@ function render(){
     spawnSparkles(car.x-camX+Math.random()*car.w,car.y+Math.random()*car.h,false,1);
 }
 
-function loop(){
+function loop(now=performance.now()){
+  frameScale=Math.max(.35,Math.min(2.2,(now-lastFrameClock)/16.667));
+  lastFrameClock=now;
   if(S.scene!=="menu"){ update(); }
   render();
   requestAnimationFrame(loop);
