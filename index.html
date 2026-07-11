@@ -12,7 +12,7 @@
 <link rel="icon" href="icon-192.png">
 <script>
   if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(()=>{}));
+    window.addEventListener('load', () => navigator.serviceWorker.register('sw.js?v=3',{updateViaCache:'none'}).catch(()=>{}));
   }
 </script>
 <style>
@@ -261,7 +261,7 @@
 <script>
 "use strict";
 /* ============================================================
-   SUDSY'S CAR WASH v2
+   SUDSY'S CAR WASH v3
    Modes:  MANUAL — drive in, scrub/rinse/dry/shine by hand, drive out
            AUTO   — drive through a scrolling wash tunnel with
                     soak, foam, mitter curtain, brushes, rinse, dryer
@@ -272,7 +272,8 @@ let W=0,H=0,DPR=1;
 
 /* ---------- game state ---------- */
 const S={ scene:"menu", mode:null, carType:0, round:0, stars:0,
-  t:0, speed:0, pedal:false, brake:false, celebrating:false };
+  t:0, speed:0, pedal:false, brake:false, celebrating:false,
+  autoExit:false };
 const car={ x:0, y:0, w:0, h:0, spin:0, bounce:0 };
 let camX=0, worldLen=0, bayX=0, exitX=0;
 let dirtLevel=1, soapLevel=0, dropLevel=0, shineGlow=0, shineTaps=0;
@@ -280,6 +281,7 @@ let stations=[];       // auto mode
 let manualPhase=-1;    // 0 spray 1 scrub 2 rinse 3 dry 4 shine 5 drive-out
 let particles=[];
 let lastTouchTime=Date.now();
+let autoHomeTimer=null;
 
 /* ---------- car-local offscreen layers (1000 x 520) ---------- */
 const LW=1000, LH=520;
@@ -1005,7 +1007,49 @@ function drawSky(){
   g.fillStyle="rgba(255,255,255,.9)";
   const dashW=W*0.055, off=-(camX%(dashW*2));
   for(let x=off;x<W;x+=dashW*2){ rr(g,x,H*0.885,dashW,H*0.011,6); g.fill(); }
+  drawWetSurfaceDetails();
 }
+function drawWetSurfaceDetails(){
+  const top=roadTop(), floorH=H-top;
+  // Broad reflected light bands make the pavement read as wet rather than flat gray.
+  g.save();
+  g.globalCompositeOperation="screen";
+  for(let i=0;i<5;i++){
+    const px=((i*W*0.31-camX*0.42)%(W+260))-130;
+    const w=Math.max(90,W*0.18);
+    const grad=g.createLinearGradient(px,top,px+w,top+floorH);
+    grad.addColorStop(0,"rgba(255,255,255,.02)");
+    grad.addColorStop(.45,"rgba(150,220,255,.13)");
+    grad.addColorStop(1,"rgba(255,255,255,0)");
+    g.fillStyle=grad;
+    g.beginPath();
+    g.moveTo(px,top); g.lineTo(px+w*.34,top); g.lineTo(px+w,H); g.lineTo(px-w*.1,H);
+    g.closePath(); g.fill();
+  }
+  g.restore();
+
+  // Stable puddles and drain grates: no frame-to-frame random flicker.
+  for(let i=0;i<7;i++){
+    const px=((i*233-camX*.72)%(W+360))-180;
+    const py=top+floorH*(.28+((i*37)%55)/100);
+    const pw=70+((i*29)%80), ph=7+((i*17)%10);
+    const puddle=g.createRadialGradient(px,py,1,px,py,pw*.58);
+    puddle.addColorStop(0,"rgba(204,239,255,.18)");
+    puddle.addColorStop(.7,"rgba(70,112,145,.11)");
+    puddle.addColorStop(1,"rgba(30,55,75,0)");
+    g.fillStyle=puddle; g.beginPath(); g.ellipse(px,py,pw,ph,0,0,7); g.fill();
+  }
+  if(S.scene==="auto"){
+    const gy=top+floorH*.72;
+    g.fillStyle="rgba(28,43,55,.72)";
+    for(let x=-(camX%84)-84;x<W+84;x+=84){ rr(g,x,gy,55,8,2); g.fill(); }
+    g.strokeStyle="rgba(190,212,225,.42)"; g.lineWidth=1;
+    for(let x=-(camX%84)-84;x<W+84;x+=84){
+      for(let j=0;j<5;j++){ g.beginPath(); g.moveTo(x+8+j*9,gy+1); g.lineTo(x+8+j*9,gy+7); g.stroke(); }
+    }
+  }
+}
+
 function palm(x,baseY,s,lean){
   if(x<-160||x>W+160) return;
   g.save(); g.translate(x,baseY);
@@ -1102,6 +1146,15 @@ function drawTunnel(){
   // interior wall
   g.fillStyle="rgba(67,97,238,.14)";
   g.fillRect(Math.max(-50,x0),topY+roofH,Math.min(W+100,x1)-Math.max(-50,x0),wallB-(topY+roofH));
+  // wall panels, seams, and a darker baseboard add industrial depth.
+  g.strokeStyle="rgba(41,73,99,.20)"; g.lineWidth=2;
+  const panelW=Math.max(90,car.w*.46);
+  for(let px=x0-(camX%panelW);px<x1;px+=panelW){
+    g.beginPath(); g.moveTo(px,topY+roofH); g.lineTo(px,wallB); g.stroke();
+  }
+  g.fillStyle="rgba(18,48,70,.26)";
+  g.fillRect(Math.max(-50,x0),wallB-H*.032,Math.min(W+100,x1)-Math.max(-50,x0),H*.032);
+
   // roof
   const roofGrad=g.createLinearGradient(0,topY,0,topY+roofH);
   roofGrad.addColorStop(0,"#5390d9"); roofGrad.addColorStop(1,"#3a56c9");
@@ -1117,6 +1170,18 @@ function drawTunnel(){
   g.fillStyle="#fff"; g.textAlign="center"; g.textBaseline="middle";
   const signX=Math.max(Math.min((x0+x1)/2,W-170),170);
   if(x1>0&&x0<W) g.fillText("🫧 SUDSY'S SUPER WASH 🫧",signX,topY+roofH*0.46);
+  // ceiling LED fixtures and their soft floor reflections.
+  for(let lx=x0+car.w*.48;lx<x1;lx+=car.w*.78){
+    const pulse=.82+.12*Math.sin(S.t*.035+lx*.01);
+    g.save(); g.shadowColor="#c8f2ff"; g.shadowBlur=14;
+    g.fillStyle=`rgba(225,249,255,${pulse})`;
+    rr(g,lx-34,topY+roofH+10,68,7,4); g.fill(); g.restore();
+    const refl=g.createLinearGradient(0,wallB,0,H);
+    refl.addColorStop(0,`rgba(170,230,255,${pulse*.16})`);
+    refl.addColorStop(1,"rgba(170,230,255,0)");
+    g.fillStyle=refl;
+    g.beginPath(); g.moveTo(lx-16,wallB); g.lineTo(lx+16,wallB); g.lineTo(lx+60,H); g.lineTo(lx-60,H); g.closePath(); g.fill();
+  }
   // posts
   g.fillStyle="#5390d9";
   for(let px=x0;px<=x1;px+=car.w*1.55){
@@ -1387,8 +1452,9 @@ $("#modeManual").addEventListener("click",()=>{ initAudio(); S.mode="manual"; op
 $("#modeAuto").addEventListener("click",()=>{ initAudio(); S.mode="auto"; openPicker(); });
 $("#homeBtn").addEventListener("click",goHome);
 function goHome(){
+  if(autoHomeTimer){ clearTimeout(autoHomeTimer); autoHomeTimer=null; }
   setMachine(null); setEngine(false,0);
-  S.scene="menu"; S.celebrating=false; manualPhase=-1;
+  S.scene="menu"; S.celebrating=false; S.autoExit=false; manualPhase=-1;
   particles=[];
   showPedal(false); showHorn(false); showHome(false);
   hideMsg(); $("#progWrap").classList.remove("show");
@@ -1418,7 +1484,8 @@ function buildPicker(){
   });
 }
 function startRun(i){
-  S.carType=i; S.celebrating=false; S.speed=0; S.pedal=false; S.brake=false;
+  if(autoHomeTimer){ clearTimeout(autoHomeTimer); autoHomeTimer=null; }
+  S.carType=i; S.celebrating=false; S.autoExit=false; S.speed=0; S.pedal=false; S.brake=false;
   shineGlow=0; shineTaps=0; car.spin=0; car.bounce=0;
   dirtLevel=1; soapLevel=0; dropLevel=0;
   buildMask();
@@ -1490,7 +1557,16 @@ function finishRun(){
   showPedal(false); showHorn(false);
   spawnConfetti(); tada(); setTimeout(honk,700);
   $("#cheerTxt").textContent=CHEERS[Math.floor(Math.random()*CHEERS.length)];
-  setTimeout(()=>$("#celebrate").classList.remove("hidden"),1000);
+  $("#bigBtn").textContent=S.mode==="auto"?"Home now 🏠":"Wash another! 🚗";
+  setTimeout(()=>$("#celebrate").classList.remove("hidden"),700);
+  if(S.mode==="auto"){
+    autoHomeTimer=setTimeout(()=>{
+      if(S.celebrating&&S.scene==="auto"){
+        S.round++;
+        goHome();
+      }
+    },4200);
+  }
 }
 
 /* ============================================================
@@ -1663,7 +1739,12 @@ function update(){
     // conveyor: inside the tunnel the track gently pulls the car
     if(S.scene==="auto"){
       const inTunnel=car.x+car.w/2>stations[0].x-car.w*0.5 && car.x<exitX;
-      if(inTunnel&&!S.brake) target=Math.max(target,maxSp*0.18);
+      if(S.autoExit){
+        // After the dryer, the conveyor owns the final rollout so a young player
+        // cannot get stuck by releasing GAS at the exact moment the wash ends.
+        target=Math.max(target,maxSp*.58);
+        S.brake=false;
+      } else if(inTunnel&&!S.brake) target=Math.max(target,maxSp*0.18);
     }
     if(S.brake) target=0;
     S.speed+=(target-S.speed)*(S.brake?0.16:0.06);
@@ -1693,7 +1774,9 @@ function update(){
   else if(S.scene==="auto"){
     camX=Math.max(0,Math.min(car.x-W*0.36,worldLen-W));
     autoStations();
-    if(car.x-camX>W+car.w*0.2||car.x>worldLen-car.w*0.5) finishRun();
+    const finalStation=stations[stations.length-1];
+    if(S.autoExit&&finalStation&&car.x>finalStation.x+car.w*.95) finishRun();
+    else if(car.x-camX>W+car.w*0.2||car.x>worldLen-car.w*0.5) finishRun();
   }
 }
 
@@ -1769,6 +1852,14 @@ function autoStations(){
       if(S.t%9===0) spawnSparkles(sxScreen+(Math.random()-0.5)*car.w*0.4,car.y+Math.random()*car.h*0.6,false,1);
     }
   });
+  const allPassed=stations.length>0&&stations.every(st=>st.passed);
+  if(allPassed&&!S.autoExit&&!S.celebrating){
+    S.autoExit=true;
+    S.pedal=false; S.brake=false;
+    activeIdx=stations.length+1;
+    msg("✅","Wash complete — rolling out!");
+    dingDing();
+  }
   if(car.x>exitX) activeIdx=stations.length+1;
   stripProgress(activeIdx);
   setMachine(soundWanted);
@@ -1776,7 +1867,7 @@ function autoStations(){
     // encourage the final stretch
   }
   // update guidance text
-  if(car.x>exitX-car.w*0.3&&!S.celebrating&&S.speed<car.w*0.002) msg("🏁","You did it! Keep going!");
+  if(!S.autoExit&&car.x>exitX-car.w*0.3&&!S.celebrating&&S.speed<car.w*0.002) msg("🏁","You did it! Keep going!");
 }
 
 /* ============================================================

@@ -1,23 +1,25 @@
-# Sudsy's Car Wash
+# Sudsy's Car Wash — Fixed Build
 
-A drive-through car wash game for very young players. Two modes:
+A drive-through car wash game for very young players.
 
-- **Manual** — pull the car into the bay, then spray, scrub, rinse, dry, wax, and shine it with your fingers
-- **Automatic** — drive through an eight-station tunnel: rinse, foam, wheels, wiggle curtain, scrub brushes, rinse, rainbow wax, and dryer
+## Fixes in this build
 
-Seven vehicles (car, pickup, bus, police car, fire truck, race car, monster truck), three kinds of grime (mud, grass stains, bird splats), and three times of day (sunny, sunset, evening with stars) that rotate each round.
+- Automatic mode now recognizes completion immediately after the dryer.
+- The conveyor automatically rolls the vehicle out, so releasing GAS cannot leave the game stuck.
+- A celebration appears, then the game returns to the Home Screen automatically after about four seconds.
+- The Home button remains available during play, and the celebration includes a **Home now** button.
+- The service-worker cache was bumped to v3 so installed PWA copies do not keep serving the older bugged game.
 
-Single-file HTML5 canvas game, runs offline as a PWA. No dependencies.
+## Visual improvements
 
-## Add to home screen (iPad / iPhone)
-
-1. Open the game in Safari
-2. Share → **Add to Home Screen**
-3. Launches fullscreen with the Sudsy icon; works offline after first load
+- Deeper wet-pavement reflections and stable puddles
+- Drain grates and wash-bay floor detail
+- Industrial wall panels, darker baseboards, ceiling lights, and reflected tunnel lighting
+- Existing water, foam, mist, brush, wax, and vehicle-reflection effects retained
 
 ## Files
 
 - `index.html` — the game
 - `manifest.webmanifest` — PWA manifest
-- `sw.js` — service worker (offline caching)
+- `sw.js` — offline caching and update behavior
 - `icon-180.png`, `icon-192.png`, `icon-512.png` — app icons
