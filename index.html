@@ -1876,9 +1876,25 @@ const MPHASES=[
 ];
 const CHEERS=["Sparkling clean!","Amazing job!","So shiny!","Wow, great washing!","Squeaky clean!"];
 
-$("#modeManual").addEventListener("click",()=>{ initAudio(); S.mode="manual"; openPicker(); });
-$("#modeAuto").addEventListener("click",()=>{ initAudio(); S.mode="auto"; openPicker(); });
-$("#homeBtn").addEventListener("click",goHome);
+/* iOS-safe button binding: act on touchend directly instead of trusting
+   Safari to synthesize a click (recent WebKit suppresses it more aggressively).
+   The click listener remains as a fallback for mouse/trackpad, with a latch
+   so a touch never fires the action twice. */
+function bindTap(el,fn){
+  let usedTouch=false;
+  el.addEventListener("touchend",e=>{
+    usedTouch=true;
+    e.preventDefault(); e.stopPropagation();
+    fn(e);
+  },{passive:false});
+  el.addEventListener("click",e=>{
+    if(usedTouch){ usedTouch=false; return; }
+    fn(e);
+  });
+}
+bindTap($("#modeManual"),()=>{ initAudio(); S.mode="manual"; openPicker(); });
+bindTap($("#modeAuto"),()=>{ initAudio(); S.mode="auto"; openPicker(); });
+bindTap($("#homeBtn"),goHome);
 function goHome(){
   if(autoHomeTimer){ clearTimeout(autoHomeTimer); autoHomeTimer=null; }
   setMachine(null); setEngine(false,0);
@@ -1912,7 +1928,7 @@ function buildPicker(){
     drawVehicle(c.getContext("2d"),18,28,304,cfg,0,0);
     const p=document.createElement("p"); p.textContent=cfg.name;
     btn.appendChild(c); btn.appendChild(p);
-    btn.addEventListener("click",()=>{ initAudio(); startRun(i); });
+    bindTap(btn,()=>{ initAudio(); startRun(i); });
     row.appendChild(btn);
   });
 }
@@ -1955,7 +1971,7 @@ function startRun(i){
   blip(659,0.15,"triangle",0.15);
   lastTouchTime=Date.now();
 }
-$("#bigBtn").addEventListener("click",()=>{
+bindTap($("#bigBtn"),()=>{
   S.round++;
   goHome();
 });
@@ -2183,14 +2199,14 @@ function drawOverhead(c,IW,IH,kind){
   c.fillText("Looking down from above — brown means you missed a spot",IW/2,IH-14);
 }
 document.querySelectorAll(".viewBtn").forEach(b=>{
-  b.addEventListener("click",()=>{
+  bindTap(b,()=>{
     inspectView=b.dataset.v;
     document.querySelectorAll(".viewBtn").forEach(o=>o.classList.toggle("active",o===b));
     drawInspection();
     blip(880,0.08,"triangle",0.1);
   });
 });
-$("#nextBtn").addEventListener("click",()=>{
+bindTap($("#nextBtn"),()=>{
   if(S.scene==="mwash"&&manualPhase>=0&&manualPhase<6) advanceManual(false);
 });
 
@@ -2227,6 +2243,8 @@ function onDown(e){
   e.preventDefault();
 }
 function onMove(e){
+  const tgtM=e.target;
+  const onUiM=tgtM&&tgtM.closest&&tgtM.closest("#gas,#brake,#horn,#homeBtn,#nextBtn,.overlay,.viewBtn,button");
   for(const t of getPts(e)){
     if(!activePts.has(t.id)) continue;
     const prev=activePts.get(t.id);
@@ -2236,11 +2254,16 @@ function onMove(e){
     activePts.set(t.id,{x:t.x,y:t.y});
   }
   lastTouchTime=Date.now();
-  e.preventDefault();
+  if(!onUiM) e.preventDefault();
 }
 function onUp(e){
+  // Only claim this touch if it wasn't aimed at a button — preventing default
+  // on a button's touchend kills iOS's synthesized click, making the whole UI
+  // feel dead. (Fixed after exactly that happened.)
+  const tgt=e.target;
+  const onUi=tgt&&tgt.closest&&tgt.closest("#gas,#brake,#horn,#homeBtn,#nextBtn,.overlay,.viewBtn,button");
   for(const t of getPts(e)) activePts.delete(t.id);
-  e.preventDefault();
+  if(!onUi) e.preventDefault();
 }
 if("ontouchstart" in window){
   document.addEventListener("touchstart",onDown,{passive:false});
