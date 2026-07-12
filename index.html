@@ -11,6 +11,17 @@
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="icon" href="icon-192.png">
 <script>
+  window.addEventListener('error', function (e) {
+    var d = document.getElementById('errBanner');
+    if (!d) {
+      d = document.createElement('div');
+      d.id = 'errBanner';
+      d.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:99999;background:#c9184a;color:#fff;'
+        + 'font:bold 13px monospace;padding:8px 12px;white-space:pre-wrap;';
+      (document.body || document.documentElement).appendChild(d);
+    }
+    d.textContent = 'Error: ' + e.message + '\n' + (e.filename||'') + ':' + (e.lineno||'');
+  });
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => navigator.serviceWorker.register('sw.js?v=3',{updateViaCache:'none'}).catch(()=>{}));
   }
